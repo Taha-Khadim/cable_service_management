@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cable Service Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+        }
+        .package-card {
+            transition: transform 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .package-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .selected-package {
+            border: 2px solid #28a745 !important;
+            background-color: #f8fff9;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .step.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .step.completed {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Cable Service Management</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/app">Admin Panel</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center">
+        <div class="container">
+            <h1 class="display-4 mb-4">Welcome to Cable Service Management</h1>
+            <p class="lead mb-4">Choose from our premium entertainment packages and get started today!</p>
+            <button class="btn btn-light btn-lg" onclick="startProcess()">Get Started</button>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step-1">1</div>
+            <div class="step" id="step-2">2</div>
+            <div class="step" id="step-3">3</div>
+            <div class="step" id="step-4">4</div>
+        </div>
+
+        <!-- Step 1: Package Selection -->
+        <div id="package-selection" class="step-content">
+            <h2 class="text-center mb-4">Select Your Packages</h2>
+            <div class="row" id="packages-container">
+                <!-- Packages will be loaded here -->
+            </div>
+            <div class="text-center mt-4">
+                <div class="alert alert-info">
+                    <strong>Total Amount: $<span id="total-amount">0</span></strong>
+                </div>
+                <button class="btn btn-primary btn-lg" onclick="proceedToProfile()" disabled id="proceed-btn">
+                    Proceed to Profile
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Customer Profile -->
+        <div id="customer-profile" class="step-content" style="display: none;">
+            <h2 class="text-center mb-4">Customer Information</h2>
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <form id="customer-form">
+                        <div class="mb-3">
+                            <label for="customer_name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="customer_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address *</label>
+                            <textarea class="form-control" id="address" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cnic" class="form-label">CNIC (13 digits) *</label>
+                            <input type="text" class="form-control" id="cnic" maxlength="13" required>
+                        </div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-secondary me-2" onclick="goBack(1)">Back</button>
+                            <button type="button" class="btn btn-primary" onclick="createProfile()">Create Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Payment -->
+        <div id="payment-section" class="step-content" style="display: none;">
+            <h2 class="text-center mb-4">Payment Information</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Selected Packages</h5>
+                        </div>
+                        <div class="card-body" id="selected-packages-summary">
+                            <!-- Package summary will be shown here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <form id="payment-form">
+                        <div class="mb-3">
+                            <label for="payment_amount" class="form-label">Amount</label>
+                            <input type="number" class="form-control" id="payment_amount" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="payment_mode" class="form-label">Payment Mode *</label>
+                            <select class="form-control" id="payment_mode" required>
+                                <option value="">Select Payment Mode</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="payment_status" class="form-label">Payment Status *</label>
+                            <select class="form-control" id="payment_status" required>
+                                <option value="">Select Status</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-secondary me-2" onclick="goBack(2)">Back</button>
+                            <button type="button" class="btn btn-success" onclick="recordPayment()">Record Payment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Status -->
+        <div id="status-section" class="step-content" style="display: none;">
+            <h2 class="text-center mb-4">Customer Status</h2>
+            <div id="customer-status-details">
+                <!-- Status details will be shown here -->
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-primary" onclick="startNewProcess()">Create New Customer</button>
+                <a href="/app/customer" class="btn btn-secondary">View All Customers</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedPackages = [];
+        let currentCustomerId = null;
+        let totalAmount = 0;
+
+        // Load packages on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPackages();
+        });
+
+        function startProcess() {
+            document.querySelector('.hero-section').style.display = 'none';
+            document.getElementById('package-selection').style.display = 'block';
+        }
+
+        function loadPackages() {
+            frappe.call({
+                method: "cable_service_management.api.customer_api.get_packages",
+                callback: function(r) {
+                    if (r.message) {
+                        renderPackages(r.message);
+                    }
+                }
+            });
+        }
+
+        function renderPackages(packages) {
+            const container = document.getElementById('packages-container');
+            container.innerHTML = '';
+
+            packages.forEach(function(package) {
+                const packageCard = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card package-card" data-package="${package.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${package.package_name}</h5>
+                                <p class="card-text"><strong>Price: $${package.price}</strong></p>
+                                <p class="card-text"><small class="text-muted">${package.channels}</small></p>
+                                <button class="btn btn-outline-primary select-package-btn" onclick="togglePackage('${package.name}', ${package.price})">
+                                    Select
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += packageCard;
+            });
+        }
+
+        function togglePackage(packageName, price) {
+            const card = document.querySelector(`[data-package="${packageName}"]`);
+            const btn = card.querySelector('.select-package-btn');
+
+            if (selectedPackages.includes(packageName)) {
+                // Remove package
+                selectedPackages = selectedPackages.filter(p => p !== packageName);
+                card.classList.remove('selected-package');
+                btn.textContent = 'Select';
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-primary');
+                totalAmount -= price;
+            } else {
+                // Add package
+                selectedPackages.push(packageName);
+                card.classList.add('selected-package');
+                btn.textContent = 'Selected';
+                btn.classList.remove('btn-outline-primary');
+                btn.classList.add('btn-success');
+                totalAmount += price;
+            }
+
+            document.getElementById('total-amount').textContent = totalAmount;
+            document.getElementById('proceed-btn').disabled = selectedPackages.length === 0;
+        }
+
+        function proceedToProfile() {
+            if (selectedPackages.length === 0) {
+                alert('Please select at least one package');
+                return;
+            }
+
+            showStep(2);
+            document.getElementById('package-selection').style.display = 'none';
+            document.getElementById('customer-profile').style.display = 'block';
+        }
+
+        function createProfile() {
+            const form = document.getElementById('customer-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const customerData = {
+                customer_name: document.getElementById('customer_name').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                cnic: document.getElementById('cnic').value
+            };
+
+            frappe.call({
+                method: "cable_service_management.api.customer_api.create_customer_profile",
+                args: {
+                    customer_data: customerData,
+                    selected_packages: selectedPackages
+                },
+                callback: function(r) {
+                    if (r.message && r.message.success) {
+                        currentCustomerId = r.message.customer_id;
+                        showPaymentSection();
+                    } else {
+                        alert(r.message ? r.message.message : 'Error creating customer profile');
+                    }
+                }
+            });
+        }
+
+        function showPaymentSection() {
+            showStep(3);
+            document.getElementById('customer-profile').style.display = 'none';
+            document.getElementById('payment-section').style.display = 'block';
+            document.getElementById('payment_amount').value = totalAmount;
+
+            // Show selected packages summary
+            frappe.call({
+                method: "cable_service_management.api.customer_api.get_package_details",
+                args: { package_names: selectedPackages },
+                callback: function(r) {
+                    if (r.message) {
+                        renderPackageSummary(r.message.packages);
+                    }
+                }
+            });
+        }
+
+        function renderPackageSummary(packages) {
+            const container = document.getElementById('selected-packages-summary');
+            let html = '';
+
+            packages.forEach(function(pkg) {
+                html += `
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>${pkg.package_name}</span>
+                        <span>$${pkg.price}</span>
+                    </div>
+                `;
+            });
+
+            html += `
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <strong>Total: $${totalAmount}</strong>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function recordPayment() {
+            const form = document.getElementById('payment-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const paymentData = {
+                customer: currentCustomerId,
+                amount: totalAmount,
+                payment_mode: document.getElementById('payment_mode').value,
+                payment_status: document.getElementById('payment_status').value
+            };
+
+            frappe.call({
+                method: "cable_service_management.api.customer_api.record_payment",
+                args: { payment_data: paymentData },
+                callback: function(r) {
+                    if (r.message && r.message.success) {
+                        showStatusSection();
+                    } else {
+                        alert(r.message ? r.message.message : 'Error recording payment');
+                    }
+                }
+            });
+        }
+
+        function showStatusSection() {
+            showStep(4);
+            document.getElementById('payment-section').style.display = 'none';
+            document.getElementById('status-section').style.display = 'block';
+
+            // Load customer status
+            frappe.call({
+                method: "cable_service_management.api.customer_api.get_customer_status",
+                args: { customer_id: currentCustomerId },
+                callback: function(r) {
+                    if (r.message) {
+                        renderCustomerStatus(r.message);
+                    }
+                }
+            });
+        }
+
+        function renderCustomerStatus(data) {
+            const container = document.getElementById('customer-status-details');
+            
+            let statusBadge = '';
+            if (data.service_status === 'Active') {
+                statusBadge = '<span class="badge bg-success">Active</span>';
+            } else if (data.service_status === 'Pending') {
+                statusBadge = '<span class="badge bg-warning">Pending</span>';
+            } else {
+                statusBadge = '<span class="badge bg-danger">Inactive</span>';
+            }
+
+            let packagesHtml = '';
+            data.packages.forEach(function(pkg) {
+                packagesHtml += `
+                    <tr>
+                        <td>${pkg.package_name}</td>
+                        <td>$${pkg.price}</td>
+                        <td>${pkg.channels}</td>
+                    </tr>
+                `;
+            });
+
+            const html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Customer Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Name:</strong> ${data.customer.name}</p>
+                                <p><strong>Phone:</strong> ${data.customer.phone}</p>
+                                <p><strong>Address:</strong> ${data.customer.address}</p>
+                                <p><strong>CNIC:</strong> ${data.customer.cnic}</p>
+                                <p><strong>Status:</strong> ${statusBadge}</p>
+                                ${data.activation_date ? `<p><strong>Activated:</strong> ${data.activation_date}</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Package Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Package</th>
+                                            <th>Price</th>
+                                            <th>Channels</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${packagesHtml}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Total</th>
+                                            <th>$${data.total_amount}</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function showStep(stepNumber) {
+            // Update step indicators
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById(`step-${i}`);
+                step.classList.remove('active', 'completed');
+                
+                if (i < stepNumber) {
+                    step.classList.add('completed');
+                } else if (i === stepNumber) {
+                    step.classList.add('active');
+                }
+            }
+        }
+
+        function goBack(currentStep) {
+            if (currentStep === 2) {
+                document.getElementById('customer-profile').style.display = 'none';
+                document.getElementById('package-selection').style.display = 'block';
+                showStep(1);
+            } else if (currentStep === 3) {
+                document.getElementById('payment-section').style.display = 'none';
+                document.getElementById('customer-profile').style.display = 'block';
+                showStep(2);
+            }
+        }
+
+        function startNewProcess() {
+            // Reset all variables
+            selectedPackages = [];
+            currentCustomerId = null;
+            totalAmount = 0;
+            
+            // Reset forms
+            document.getElementById('customer-form').reset();
+            document.getElementById('payment-form').reset();
+            
+            // Show package selection
+            document.getElementById('status-section').style.display = 'none';
+            document.getElementById('package-selection').style.display = 'block';
+            showStep(1);
+            
+            // Reload packages
+            loadPackages();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+[
+    {
+        "doctype": "Package",
+        "package_name": "Basic News",
+        "price": 500,
+        "channels": "CNN, BBC World, Al Jazeera, Fox News, CNBC"
+    },
+    {
+        "doctype": "Package", 
+        "package_name": "Sports Premium",
+        "price": 700,
+        "channels": "ESPN, Sky Sports, beIN Sports, Ten Sports, Star Sports"
+    },
+    {
+        "doctype": "Package",
+        "package_name": "Kids Entertainment", 
+        "price": 400,
+        "channels": "Cartoon Network, Nickelodeon, Disney Channel, Pogo, Discovery Kids"
+    },
+    {
+        "doctype": "Package",
+        "package_name": "All-in-One Premium",
+        "price": 1500, 
+        "channels": "All channels from News, Sports, and Kids packages plus HBO, Netflix, Amazon Prime"
+    }
+]
