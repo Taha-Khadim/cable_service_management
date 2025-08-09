@@ -15,3 +15,12 @@ class Customer(Document):
         # Set default seller if not set
         if not self.seller:
             self.seller = frappe.session.user
+
+    def after_insert(self):
+        # Create a pending service activation record for this customer
+        activation = frappe.get_doc({
+            "doctype": "Service Activation",
+            "customer": self.name,
+            "status": "Pending",
+        })
+        activation.insert(ignore_permissions=True)
