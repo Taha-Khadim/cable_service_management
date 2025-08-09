@@ -33,13 +33,14 @@ class Payment(Document):
                 "activation_date": frappe.utils.nowdate()
             })
             activation.insert(ignore_permissions=True)
-        
+
         # Update customer packages to Active
-        customer_packages = frappe.get_all("Customer Package", 
-            filters={"customer": self.customer},
-            fields=["name"]
+        customer_packages = frappe.get_all(
+            "Customer Package",
+            filters={"parent": self.customer, "parenttype": "Customer"},
+            fields=["name"],
         )
-        
+
         for pkg in customer_packages:
             cp = frappe.get_doc("Customer Package", pkg.name)
             cp.status = "Active"

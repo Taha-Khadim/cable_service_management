@@ -5,6 +5,7 @@
   "istable": 1,
   "fields": [
     {"fieldname": "package", "fieldtype": "Link", "label": "Package", "options": "Package", "reqd": 1},
+    {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Pending\nActive\nInactive", "default": "Pending"},
     {"fieldname": "activation_date", "fieldtype": "Date", "label": "Activation Date"},
     {"fieldname": "expiry_date", "fieldtype": "Date", "label": "Expiry Date"}
   ]
