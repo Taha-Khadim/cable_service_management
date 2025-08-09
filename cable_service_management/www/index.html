@@ -187,6 +187,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/frappe/js/frappe-web.min.js"></script>
     <script>
         let selectedPackages = [];
         let currentCustomerId = null;
@@ -203,13 +204,22 @@
         }
 
         function loadPackages() {
-            frappe.call({
-                method: "cable_service_management.api.customer_api.get_packages",
-                callback: function(r) {
-                    if (r.message) {
-                        renderPackages(r.message);
-                    }
+            fetch('/api/method/cable_service_management.api.customer_api.get_packages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    renderPackages(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading packages:', error);
+                alert('Error loading packages. Please refresh the page.');
             });
         }
 
@@ -287,20 +297,29 @@
                 cnic: document.getElementById('cnic').value
             };
 
-            frappe.call({
-                method: "cable_service_management.api.customer_api.create_customer_profile",
-                args: {
+            fetch('/api/method/cable_service_management.api.customer_api.create_customer_profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
                     customer_data: customerData,
                     selected_packages: selectedPackages
-                },
-                callback: function(r) {
-                    if (r.message && r.message.success) {
-                        currentCustomerId = r.message.customer_id;
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message && data.message.success) {
+                    currentCustomerId = data.message.customer_id;
                         showPaymentSection();
                     } else {
-                        alert(r.message ? r.message.message : 'Error creating customer profile');
+                    alert(data.message ? data.message.message : 'Error creating customer profile');
                     }
-                }
+            })
+            .catch(error => {
+                console.error('Error creating profile:', error);
+                alert('Error creating customer profile. Please try again.');
             });
         }
 
@@ -311,14 +330,24 @@
             document.getElementById('payment_amount').value = totalAmount;
 
             // Show selected packages summary
-            frappe.call({
-                method: "cable_service_management.api.customer_api.get_package_details",
-                args: { package_names: selectedPackages },
-                callback: function(r) {
-                    if (r.message) {
-                        renderPackageSummary(r.message.packages);
-                    }
+            fetch('/api/method/cable_service_management.api.customer_api.get_package_details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    package_names: selectedPackages
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    renderPackageSummary(data.message.packages);
                 }
+            })
+            .catch(error => {
+                console.error('Error loading package details:', error);
             });
         }
 
@@ -359,16 +388,27 @@
                 payment_status: document.getElementById('payment_status').value
             };
 
-            frappe.call({
-                method: "cable_service_management.api.customer_api.record_payment",
-                args: { payment_data: paymentData },
-                callback: function(r) {
-                    if (r.message && r.message.success) {
+            fetch('/api/method/cable_service_management.api.customer_api.record_payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    payment_data: paymentData
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message && data.message.success) {
                         showStatusSection();
                     } else {
-                        alert(r.message ? r.message.message : 'Error recording payment');
+                    alert(data.message ? data.message.message : 'Error recording payment');
                     }
-                }
+            })
+            .catch(error => {
+                console.error('Error recording payment:', error);
+                alert('Error recording payment. Please try again.');
             });
         }
 
@@ -378,14 +418,24 @@
             document.getElementById('status-section').style.display = 'block';
 
             // Load customer status
-            frappe.call({
-                method: "cable_service_management.api.customer_api.get_customer_status",
-                args: { customer_id: currentCustomerId },
-                callback: function(r) {
-                    if (r.message) {
-                        renderCustomerStatus(r.message);
-                    }
+            fetch('/api/method/cable_service_management.api.customer_api.get_customer_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    customer_id: currentCustomerId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    renderCustomerStatus(data.message);
                 }
+            })
+            .catch(error => {
+                console.error('Error loading customer status:', error);
             });
         }
 

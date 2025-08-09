@@ -49,6 +49,14 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
+        .alert {
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -61,6 +69,7 @@
                         <p class="mb-0 mt-2">Seller Login</p>
                     </div>
                     <div class="login-body">
+                        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
                         <form id="login-form">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
@@ -71,7 +80,10 @@
                                 <input type="password" class="form-control" id="password" required>
                             </div>
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-primary btn-login">Login</button>
+                                <button type="submit" class="btn btn-primary btn-login" id="login-btn">
+                                    <span id="login-text">Login</span>
+                                    <span id="login-spinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                                </button>
                             </div>
                         </form>
                         <div class="text-center mt-4">
@@ -87,27 +99,98 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.style.display = 'none';
+        }
+
+        function setLoading(loading) {
+            const loginBtn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            const loginSpinner = document.getElementById('login-spinner');
+            
+            if (loading) {
+                loginBtn.disabled = true;
+                loginText.textContent = 'Logging in...';
+                loginSpinner.style.display = 'inline-block';
+            } else {
+                loginBtn.disabled = false;
+                loginText.textContent = 'Login';
+                loginSpinner.style.display = 'none';
+            }
+        }
+
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             
-            frappe.call({
-                method: "login",
-                args: {
-                    usr: username,
-                    pwd: password
-                },
-                callback: function(r) {
-                    if (r.message === "Logged In") {
-                        window.location.href = "/app";
-                    } else {
-                        alert("Invalid credentials. Please try again.");
-                    }
+            if (!username || !password) {
+                showError('Please enter both username and password');
+                return;
+            }
+
+            hideError();
+            setLoading(true);
+            
+            // Create form data for login
+            const formData = new FormData();
+            formData.append('cmd', 'login');
+            formData.append('usr', username);
+            formData.append('pwd', password);
+            
+            fetch('/api/method/login', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Frappe-CSRF-Token': getCookie('csrf_token') || ''
                 }
+            })
+            .then(response => response.json())
+            .then(data => {
+                setLoading(false);
+                
+                if (data.message === 'Logged In' || data.message === 'logged_in') {
+                    // Successful login
+                    window.location.href = '/app';
+                } else {
+                    // Login failed
+                    showError(data.message || 'Invalid credentials. Please try again.');
+                }
+            })
+            .catch(error => {
+                setLoading(false);
+                console.error('Login error:', error);
+                showError('Login failed. Please check your connection and try again.');
             });
         });
+
+        // Helper function to get cookie value
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Auto-focus on username field
+        document.getElementById('username').focus();
     </script>
 </body>
 </html>
