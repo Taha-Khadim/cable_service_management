@@ -1,0 +1,10 @@
+{
+  "doctype": "DocType",
+  "name": "Package",
+  "module": "Cable Service Management",
+  "fields": [
+    {"fieldname": "package_name", "fieldtype": "Data", "label": "Package Name", "reqd": 1, "unique": 1},
+    {"fieldname": "price", "fieldtype": "Currency", "label": "Price", "reqd": 1, "default": "100"},
+    {"fieldname": "channels", "fieldtype": "Table", "label": "Channels", "options": "Channel"}
+  ]
+}

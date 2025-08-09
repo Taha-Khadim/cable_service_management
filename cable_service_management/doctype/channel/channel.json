@@ -1,0 +1,9 @@
+{
+  "doctype": "DocType",
+  "name": "Channel",
+  "module": "Cable Service Management",
+  "istable": 1,
+  "fields": [
+    {"fieldname": "channel_name", "fieldtype": "Data", "label": "Channel Name", "reqd": 1, "unique": 1}
+  ]
+}

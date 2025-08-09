@@ -1,0 +1,12 @@
+{
+  "doctype": "DocType",
+  "name": "Payment",
+  "module": "Cable Service Management",
+  "fields": [
+    {"fieldname": "customer", "fieldtype": "Link", "label": "Customer", "options": "Customer", "reqd": 1},
+    {"fieldname": "amount", "fieldtype": "Currency", "label": "Amount", "reqd": 1, "depends_on": "eval:doc.amount>0"},
+    {"fieldname": "payment_mode", "fieldtype": "Select", "label": "Payment Mode", "options": "Cash\nBank Transfer\nOther"},
+    {"fieldname": "payment_status", "fieldtype": "Select", "label": "Payment Status", "options": "Paid\nPending", "reqd": 1, "default": "Pending"},
+    {"fieldname": "posting_date", "fieldtype": "Date", "label": "Posting Date", "default": "Today"}
+  ]
+}

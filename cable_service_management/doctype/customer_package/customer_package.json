@@ -1,0 +1,11 @@
+{
+  "doctype": "DocType",
+  "name": "Customer Package",
+  "module": "Cable Service Management",
+  "istable": 1,
+  "fields": [
+    {"fieldname": "package", "fieldtype": "Link", "label": "Package", "options": "Package", "reqd": 1},
+    {"fieldname": "activation_date", "fieldtype": "Date", "label": "Activation Date"},
+    {"fieldname": "expiry_date", "fieldtype": "Date", "label": "Expiry Date"}
+  ]
+}

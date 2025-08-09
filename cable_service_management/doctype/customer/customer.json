@@ -1,0 +1,12 @@
+{
+  "doctype": "DocType",
+  "name": "Customer",
+  "module": "Cable Service Management",
+  "fields": [
+    {"fieldname": "customer_name", "fieldtype": "Data", "label": "Customer Name", "reqd": 1},
+    {"fieldname": "phone", "fieldtype": "Data", "label": "Phone", "reqd": 1},
+    {"fieldname": "address", "fieldtype": "Small Text", "label": "Address"},
+    {"fieldname": "cnic", "fieldtype": "Data", "label": "CNIC", "reqd": 1, "unique": 1},
+    {"fieldname": "seller", "fieldtype": "Link", "label": "Seller", "options": "User", "default": "frappe.session.user"}
+  ]
+}

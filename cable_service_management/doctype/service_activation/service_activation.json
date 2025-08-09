@@ -1,0 +1,10 @@
+{
+  "doctype": "DocType",
+  "name": "Service Activation",
+  "module": "Cable Service Management",
+  "fields": [
+    {"fieldname": "customer", "fieldtype": "Link", "label": "Customer", "options": "Customer", "reqd": 1},
+    {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Pending\nActive\nInactive", "reqd": 1, "default": "Pending"},
+    {"fieldname": "activation_date", "fieldtype": "Date", "label": "Activation Date"}
+  ]
+}

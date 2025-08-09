@@ -1,0 +1,34 @@
+{
+  "doctype": "Workspace",
+  "module": "Cable Service Management",
+  "label": "Cable Service Management",
+  "is_standard": 1,
+  "icon": "octicon octicon-broadcast",
+  "items": [
+    {
+      "section": "Customers & Profiles",
+      "items": [
+        {"label": "Customers", "type": "doctype", "name": "Customer"}
+      ]
+    },
+    {
+      "section": "Packages & Channels",
+      "items": [
+        {"label": "Packages", "type": "doctype", "name": "Package"},
+        {"label": "Channels", "type": "doctype", "name": "Channel"}
+      ]
+    },
+    {
+      "section": "Transactions",
+      "items": [
+        {"label": "Payments", "type": "doctype", "name": "Payment"}
+      ]
+    },
+    {
+      "section": "Service",
+      "items": [
+        {"label": "Activations", "type": "doctype", "name": "Service Activation"}
+      ]
+    }
+  ]
+}
